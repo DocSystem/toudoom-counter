@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Toudoom Counter - Live</title>
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                background: none;
+            }
+            #counter {
+                font-size: 10em;
+                text-align: center;
+                margin-top: 20vh;
+                font-family: sans-serif;
+                font-weight: bold;
+                color: yellow;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="counter">0</div>
+        <script>
+            const ws = new WebSocket(`ws${location.protocol === 'https:' ? 's' : ''}://${location.host}/live/ws`);
+            ws.onopen = () => {
+                console.log('Connected to server');
+            }
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'counter') {
+                    document.getElementById('counter').innerText = data.counter;
+                }
+            }
+            ws.onclose = () => {
+                window.location.reload();
+            }
+        </script>
+    </body>
+</html>

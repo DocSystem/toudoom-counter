@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Toudoom Counter - User</title>
+        <style>
+
+        </style>
+    </head>
+    <body>
+        <div id="counter">0</div>
+        <script>
+            let counter = 0;
+            const ws = new WebSocket(`ws${location.protocol === 'https:' ? 's' : ''}://${location.host}/ws`);
+            ws.onopen = () => {
+                console.log('Connected to server');
+            }
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'counter') {
+                    document.getElementById('counter').innerText = data.counter;
+                    counter = data.counter;
+                }
+            }
+            ws.onclose = () => {
+                window.location.reload();
+            }
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'p' || event.key === 'P' || event.key === 'ArrowUp') {
+                    counter++;
+                    ws.send(JSON.stringify({type: 'counter', counter}));
+                    document.getElementById('counter').innerText = counter;
+                }
+                else if (event.key === 'm' || event.key === 'M' || event.key === 'ArrowDown') {
+                    counter--;
+                    ws.send(JSON.stringify({type: 'counter', counter}));
+                    document.getElementById('counter').innerText = counter;
+                }
+            });
+        </script>
+    </body>
+</html>
